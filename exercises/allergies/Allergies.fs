@@ -14,13 +14,12 @@ type Allergen =
     | Cats = 128
 
 let allergicTo (codedAllergies : int) (allergen : Allergen) = 
-    codedAllergies &&& (allergen |> int) >= 1
+    let allergies = codedAllergies |> enum<Allergen>
+    allergies.HasFlag(allergen)
 
 let list codedAllergies = 
+    let allergies = codedAllergies |> enum<Allergen>
     Enum.GetValues(typeof<Allergen>) :?> (Allergen array)
     |> Seq.ofArray 
-    |> Seq.where(fun x -> 
-        let res = codedAllergies &&& (x |> int) 
-        res >= 1)
+    |> Seq.where(fun x -> allergies.HasFlag(x))
     |> List.ofSeq
-    |> List.map (fun id -> id)
